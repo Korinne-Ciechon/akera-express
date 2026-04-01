@@ -36,6 +36,47 @@ app.get('/', function (req, res, next) {
   res.render('index', { title: 'Miami' });
 });
 
+app.get('/page2', function (req, res, next) {
+  res.render('page2', { title: 'Page 2' });
+});
+
+app.get('/form', function (req, res, next) {
+  res.render('form', { title: 'form' });
+});
+
+app.post('/form', function (req, res, next) {
+  console.log(req.body.firstname);
+  //res.render('formresponse', {firstname:req.body.firstname, lastname:req.body.lastname});
+  res.render('formresponse', req.body);
+});
+
+app.get('/guess', function (req, res, next) {
+  res.render('guess', { title: 'form' });
+});
+
+app.post('/guess', function (req, res, next) {
+  console.log(req.body.guess);
+  let randomNumber = Math.floor(Math.random() * 10);
+  console.log(randomNumber;
+  if(randomNumber == Number(req.body.guess)){
+    console.log("you guessed correctly!");
+    response = "you guessed correctly!";
+  }else{
+    console.log("you guessed incorrectly :(");
+    response = "you guessed incorrectly :(";
+  }
+
+  let templateResponse = {guess: req.body.guess, responsetext:response};
+
+  //res.render('guessresponse', {firstname:req.body.firstname, lastname:req.body.lastname});
+  res.render('formresponse', req.body);
+});
+
+
+app.get('/', function (req, res, next) {
+  console.log(req);
+  res.render('index', { title: req.params.name });
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
