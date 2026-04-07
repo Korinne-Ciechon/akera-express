@@ -5,6 +5,10 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var hbs = require('hbs');//added
 const fs = require('fs');
+const { Sequelize } = require('sequelize');
+const { DataTypes } = require('sequelize');
+const Database = require('better-sqlite3').default ?? ;
+
 
 
 // var indexRouter = require('./routes/index');
@@ -29,7 +33,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'))
 hbs.registerPartial('partial_name', 'partial value');
 
+//Setup our database
+const storage = path.join(__dirname, '..', 'data', 'database.sqlite');
 
+const sequelize = new Sequelize({
+  dialect:'sqlite',
+  dialectModule:require('better-sqlite3'), 
+  storage,
+  logging:false
+});
+
+const Task = sequelize.define('Task',{
+  name:{type: DataTypes.STRING,allowNull:false},
+  description:{type: DataTypes.TEXT}
+});
 
 /* GET home page. */
 app.get('/', function (req, res, next) {
@@ -57,7 +74,7 @@ app.get('/guess', function (req, res, next) {
 app.post('/guess', function (req, res, next) {
   console.log(req.body.guess);
   let randomNumber = Math.floor(Math.random() * 10);
-  console.log(randomNumber;
+  console.log(randomNumber);
   if(randomNumber == Number(req.body.guess)){
     console.log("you guessed correctly!");
     response = "you guessed correctly!";
@@ -70,6 +87,21 @@ app.post('/guess', function (req, res, next) {
 
   //res.render('guessresponse', {firstname:req.body.firstname, lastname:req.body.lastname});
   res.render('formresponse', req.body);
+});
+
+
+
+app.get('/addtask', function(req,res,next){
+  res.render('addtask',{title:'Add Task'});
+});
+
+app.post('/addtask', async function(req,res,next){
+  try{
+    const created = await Task.create({name:req.body.name, description: req.body.description});
+    res.json(req.body);
+  }catch(err){
+    next(err);
+  }
 });
 
 
